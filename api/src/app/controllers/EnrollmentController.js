@@ -190,7 +190,7 @@ class EnrollmentController {
 
     await enrollment.destroy();
 
-    return res.json({ message: 'Enrollment was successful removed.' });
+    return res.json(enrollment);
   }
 }
 

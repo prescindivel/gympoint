@@ -1,6 +1,8 @@
+'use strict';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('enrollments', {
+    return queryInterface.createTable('checkins', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -14,25 +16,6 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: true
       },
-      plan_id: {
-        type: Sequelize.INTEGER,
-        references: { model: 'plans', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        allowNull: true
-      },
-      start_date: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      end_date: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      price: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false
@@ -45,6 +28,6 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('enrollments');
+    return queryInterface.dropTable('checkins');
   }
 };

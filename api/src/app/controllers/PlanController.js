@@ -100,7 +100,7 @@ class PlanController {
 
     await plan.destroy();
 
-    return res.json({ message: `Plan was successful removed.` });
+    return res.json(plan);
   }
 }
 

@@ -97,11 +97,37 @@ class StudentController {
       return res.status(400).json({ error: 'Student does not exists.' });
     }
 
+    await student.destroy();
+
     const { id, name, email, age, weight, height } = await student.update(
       req.body
     );
 
     return res.json({ id, name, email, age, weight, height });
+  }
+
+  async delete(req, res) {
+    const checkIsAdmin = await User.findOne({
+      where: { id: req.userId, admin: true }
+    });
+
+    if (!checkIsAdmin) {
+      return res
+        .status(401)
+        .json({ error: 'Only users admins can update student.' });
+    }
+
+    const { student_id } = req.params;
+
+    const student = await Student.findByPk(student_id);
+
+    if (!student) {
+      return res.status(400).json({ error: 'Student does not exists.' });
+    }
+
+    await student.destroy();
+
+    return res.json(student);
   }
 }
 
