@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { endOfDay, parseISO, isBefore, addMonths } from 'date-fns';
+import { startOfDay, endOfDay, parseISO, isBefore, addMonths } from 'date-fns';
 
 import WelcomeMail from '../jobs/WelcomeMail';
 import Queue from '../../lib/Queue';
@@ -65,7 +65,7 @@ class EnrollmentController {
         .json({ error: 'Only users admins can create enrollment.' });
     }
 
-    const { start_date, student_id, plan_id } = await req.body;
+    const { start_date, student_id, plan_id } = req.body;
 
     const checkEnrollmentExists = await Enrollment.findOne({
       where: { student_id }
@@ -134,7 +134,63 @@ class EnrollmentController {
         .json({ error: 'Only users admins can update enrollment.' });
     }
 
-    return res.json({ ok: 'ok' });
+    const enrollment = await Enrollment.findByPk(req.params.enrollment_id);
+
+    if (!enrollment) {
+      return res.status(400).json({ error: 'Enrollment does not exists.' });
+    }
+
+    const { start_date, plan_id } = req.body;
+
+    const plan = plan_id
+      ? await Plan.findByPk(plan_id)
+      : await Plan.findByPk(enrollment.plan_id);
+
+    if (plan_id && !plan) {
+      return res.status(400).json({ error: 'Plan does not exists.' });
+    }
+
+    const startDate = start_date
+      ? startOfDay(parseISO(start_date))
+      : startOfDay(enrollment.start_date);
+
+    if (isBefore(endOfDay(startDate), new Date())) {
+      return res.status(400).json({ error: 'Past dates are not permitted.' });
+    }
+    const end_date = addMonths(startDate, plan.duration);
+
+    const price = plan.price * plan.duration;
+
+    await enrollment.update({
+      plan_id: plan.id,
+      price,
+      start_date: startDate.toISOString(),
+      end_date
+    });
+
+    return res.json(enrollment);
+  }
+
+  async delete(req, res) {
+    const checkIsAdmin = await User.findOne({
+      where: { id: req.userId, admin: true }
+    });
+
+    if (!checkIsAdmin) {
+      return res
+        .status(401)
+        .json({ error: 'Only users admins can delete enrollment.' });
+    }
+
+    const enrollment = await Enrollment.findByPk(req.params.enrollment_id);
+
+    if (!enrollment) {
+      return res.status(400).json({ error: 'Enrollment does not exists.' });
+    }
+
+    await enrollment.destroy();
+
+    return res.json({ message: 'Enrollment was successful removed.' });
   }
 }
 

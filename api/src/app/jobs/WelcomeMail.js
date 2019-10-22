@@ -18,6 +18,7 @@ class WelcomeMail {
       context: {
         student,
         plan,
+        enrollment,
         start_date: format(
           parseISO(enrollment.start_date),
           "'dia' dd 'de' MMMM',' yyyy",

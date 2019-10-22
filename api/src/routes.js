@@ -17,6 +17,7 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 
+routes.get('/students', StudentController.list);
 routes.post('/students', StudentController.create);
 routes.put('/students/:student_id', StudentController.update);
 
@@ -28,5 +29,6 @@ routes.delete('/plans/:plan_id', PlanController.delete);
 routes.get('/enrollments', EnrollmentController.list);
 routes.post('/enrollments', EnrollmentController.create);
 routes.put('/enrollments/:enrollment_id', EnrollmentController.update);
+routes.delete('/enrollments/:enrollment_id', EnrollmentController.delete);
 
 export default routes;
