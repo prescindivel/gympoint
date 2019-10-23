@@ -127,7 +127,7 @@ class StudentController {
 
     await student.destroy();
 
-    return res.json(student);
+    return res.send();
   }
 }
 

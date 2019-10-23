@@ -1,15 +1,23 @@
-import * as Yup from 'yup';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { Op } from 'sequelize';
 
 import Student from '../models/Student';
 import Checkin from '../models/Checkin';
+import Enrollment from '../models/Enrollment';
 
 class CheckinController {
   async list(req, res) {
     const { student_id } = req.params;
 
     const { page = 1 } = req.query;
+
+    const checkEnrollmentExists = await Enrollment.findOne({
+      where: { student_id }
+    });
+
+    if (!checkEnrollmentExists) {
+      return res.status(400).json({ error: 'Student not enrolled.' });
+    }
 
     const checkins = await Checkin.findAll({
       limit: 20,
@@ -24,6 +32,14 @@ class CheckinController {
 
   async create(req, res) {
     const { student_id } = req.params;
+
+    const checkEnrollmentExists = await Enrollment.findOne({
+      where: { student_id }
+    });
+
+    if (!checkEnrollmentExists) {
+      return res.status(400).json({ error: 'Student not enrolled.' });
+    }
 
     const student = await Student.findByPk(student_id);
 

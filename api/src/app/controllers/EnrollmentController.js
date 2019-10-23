@@ -157,6 +157,7 @@ class EnrollmentController {
     if (isBefore(endOfDay(startDate), new Date())) {
       return res.status(400).json({ error: 'Past dates are not permitted.' });
     }
+
     const end_date = addMonths(startDate, plan.duration);
 
     const price = plan.price * plan.duration;
@@ -190,7 +191,7 @@ class EnrollmentController {
 
     await enrollment.destroy();
 
-    return res.json(enrollment);
+    return res.send();
   }
 }
 

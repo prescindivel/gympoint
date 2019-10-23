@@ -100,7 +100,7 @@ class PlanController {
 
     await plan.destroy();
 
-    return res.json(plan);
+    return res.send();
   }
 }
 
